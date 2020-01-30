@@ -1,0 +1,12 @@
+time openstack overcloud deploy --templates \
+  -n /home/stack/templates/network_data_spine_leaf.yaml \
+  -r /home/stack/templates/roles_data_spine_leaf.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/network-isolation.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/network-environment.yaml \
+  -e /home/stack/templates/network-environment.yaml \
+  -e /home/stack/templates/node-data.yaml\
+  -e /home/stack/templates/overcloud_images.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+  -e /home/stack/templates/ceph-custom-config.yaml  \
+  --ntp-server 172.16.121.254 \
+  -t 180

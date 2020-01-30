@@ -1,0 +1,9 @@
+parameter_defaults:
+  OvercloudControllerFlavor: control_leaf0
+  ControllerCount: 3
+  OvercloudCompute1Flavor: compute_leaf1
+  Compute1Count: 1
+  OvercloudCompute2Flavor: compute_edge1
+  Compute2Count: 1
+  OvercloudCephStorage0Flavor: ceph-storage_leaf0
+  CephStorage0Count: 1

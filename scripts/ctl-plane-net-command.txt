@@ -1,0 +1,42 @@
+for node in $(openstack baremetal node list -f value -c Name); do openstack baremetal node manage $node --wait; done
+
+(undercloud) [stack@pool6undercloud ~]$ openstack baremetal node list
++--------------------------------------+--------------+---------------+-------------+--------------------+-------------+
+| UUID                                 | Name         | Instance UUID | Power State | Provisioning State | Maintenance |
++--------------------------------------+--------------+---------------+-------------+--------------------+-------------+
+| aad5199c-56c9-4289-90c8-fd1d4f5ea566 | controller01 | None          | power off   | manageable         | False       |
+| 4389bc44-4e01-45da-bff9-a301122c7199 | controller02 | None          | power off   | manageable         | False       |
+| 1138dee6-724e-4fef-98d3-49148a415eb8 | controller03 | None          | power off   | manageable         | False       |
+| 759fde4d-3293-48bb-9121-845b1d8e58aa | compute01    | None          | power off   | manageable         | False       |
+| 0f7a23f8-c61f-4e66-8925-5e768a0e0332 | compute02    | None          | power off   | manageable         | False       |
+| 31403b22-0378-45b2-90e2-a282f70e34ce | storage01    | None          | power off   | manageable         | False       |
++--------------------------------------+--------------+---------------+-------------+--------------------+-------------+
+
+(undercloud) [stack@pool6undercloud ~]$ openstack baremetal port list
++--------------------------------------+-------------------+
+| UUID                                 | Address           |
++--------------------------------------+-------------------+
+| 4b9bd460-436c-4bf4-8e1c-4ce34f005960 | b4:96:91:1d:7f:30 |
+| 97950151-2172-4c1d-a3ea-11a891ea0dcb | b4:96:91:1d:7f:b4 |
+| 67b2e63f-2b1d-4f75-89bd-6c5738445ebe | b4:96:91:1d:7f:dc |
+| 4941745e-9815-49ee-bf55-a286b1bedd9d | b4:96:91:1d:7f:bc |
+| 4ec9dc50-4be4-4b29-a231-7044e9711ab1 | b4:96:91:1d:7c:ac |
+| 31e96df0-283a-4c83-83f5-59d361c31b41 | b4:96:91:25:73:10 |
++--------------------------------------+-------------------+
+(undercloud) [stack@pool6undercloud ~]$
+
+openstack baremetal port list --node  controller01
+openstack baremetal port set --physical-network ctlplane 4ec9dc50-4be4-4b29-a231-7044e9711ab1
+openstack baremetal port list --node controller02
+openstack baremetal port set --physical-network ctlplane 97950151-2172-4c1d-a3ea-11a891ea0dcb
+openstack baremetal port list --node controller03
+openstack baremetal port set --physical-network ctlplane 4b9bd460-436c-4bf4-8e1c-4ce34f005960
+openstack baremetal port list --node compute01
+openstack baremetal port set --physical-network leaf1 67b2e63f-2b1d-4f75-89bd-6c5738445ebe
+openstack baremetal port list --node compute02
+openstack baremetal port set --physical-network edge1 4941745e-9815-49ee-bf55-a286b1bedd9d
+openstack baremetal port list --node storage01
+openstack baremetal port set --physical-network ctlplane 31e96df0-283a-4c83-83f5-59d361c31b41
+
+openstack overcloud node provide --all-manageable
+

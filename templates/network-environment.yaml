@@ -1,0 +1,60 @@
+resource_registry:
+  OS::TripleO::Controller::Net::SoftwareConfig: ./spine-leaf-nics/controller.yaml
+  OS::TripleO::Compute1::Net::SoftwareConfig: ./spine-leaf-nics/compute1.yaml
+  OS::TripleO::Compute2::Net::SoftwareConfig: ./spine-leaf-nics/compute2.yaml
+  OS::TripleO::CephStorage0::Net::SoftwareConfig: ./spine-leaf-nics/ceph-storage.yaml
+
+parameter_defaults:
+  StorageSupernet: 172.16.128.0/22
+  StorageMgmtSupernet: 172.16.132.0/22
+  InternalApiSupernet: 172.16.124.0/22
+  TenantSupernet: 172.16.140.0/22
+
+  ServiceNetMap:
+    Compute1HostnameResolveNetwork: internal_api1
+    Compute2HostnameResolveNetwork: internal_api2
+    CephStorage0HostnameResolveNetwork: storage
+
+  Compute1ExtraConfig:
+    nova::compute::libvirt::vncserver_listen: "%{hiera('internal_api1')}"
+    nova::compute::vncserver_proxyclient_address: "%{hiera('internal_api1')}"
+    neutron::agents::ml2::ovs::local_ip: "%{hiera('tenant1')}"
+    cold_migration_ssh_inbound_addr: "%{hiera('internal_api1')}"
+    live_migration_ssh_inbound_addr: "%{hiera('internal_api1')}"
+    nova::migration::libvirt::live_migration_inbound_addr: "%{hiera('internal_api1')}"
+    nova::my_ip: "%{hiera('internal_api1')}"
+    tripleo::profile::base::database::mysql::client::mysql_client_bind_address: "%{hiera('internal_api1')}"
+    NtpServer: 172.16.122.254
+
+  Compute2ExtraConfig:
+    nova::compute::libvirt::vncserver_listen: "%{hiera('internal_api2')}"
+    nova::compute::vncserver_proxyclient_address: "%{hiera('internal_api2')}"
+    neutron::agents::ml2::ovs::local_ip: "%{hiera('tenant2')}"
+    cold_migration_ssh_inbound_addr: "%{hiera('internal_api2')}"
+    live_migration_ssh_inbound_addr: "%{hiera('internal_api2')}"
+    nova::migration::libvirt::live_migration_inbound_addr: "%{hiera('internal_api2')}"
+    nova::my_ip: "%{hiera('internal_api2')}"
+    tripleo::profile::base::database::mysql::client::mysql_client_bind_address: "%{hiera('internal_api2')}"
+    NtpServer: 172.16.123.254
+
+  CephAnsibleExtraConfig:
+    public_network: '172.16.129.0/24,172.16.130.0/24,172.16.130.0/24'
+    cluster_network: '172.16.133.0/24,172.16.134.0/24,172.16.135.0/24'
+
+  ControlPlaneSubnet: leaf0
+
+  ControllerControlPlaneSubnet: leaf0
+  Compute1ControlPlaneSubnet: leaf1
+  Compute2ControlPlaneSubnet: edge1
+  CephStorage0ControlPlaneSubnet: leaf0
+
+  ControlPlane0DefaultRoute: 172.16.121.254
+  ControlPlane0SubnetCidr: '24'
+  ControlPlane1DefaultRoute: 172.16.122.254
+  ControlPlane1SubnetCidr: '24'
+  ControlPlane2DefaultRoute: 172.16.123.254
+  ControlPlane2SubnetCidr: '24'
+
+  Leaf0EC2MetadataIp: 172.16.121.254
+  Leaf1EC2MetadataIp: 172.16.122.254
+  Edge1EC2MetadataIp: 172.16.123.254

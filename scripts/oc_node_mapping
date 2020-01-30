@@ -1,0 +1,10 @@
+ROLES="control_leaf0 compute_leaf1 compute_edge1 ceph-storage_leaf0"
+for ROLE in $ROLES; do openstack flavor create --id auto --ram 4096 --disk 40 --vcpus 1 $ROLE ; done
+for ROLE in $ROLES; do openstack flavor set --property "cpu_arch"="x86_64" --property "capabilities:boot_option"="local" --property "capabilities:profile"="$ROLE" $ROLE ; done
+
+openstack baremetal node set --property capabilities='profile:control_leaf0,boot_option:local' controller01
+openstack baremetal node set --property capabilities='profile:control_leaf0,boot_option:local' controller02
+openstack baremetal node set --property capabilities='profile:control_leaf0,boot_option:local' controller03
+openstack baremetal node set --property capabilities='profile:compute_leaf1,boot_option:local' compute01
+openstack baremetal node set --property capabilities='profile:compute_edge1,boot_option:local' compute02
+openstack baremetal node set --property capabilities='profile:ceph-storage_leaf0,boot_option:local' storage01

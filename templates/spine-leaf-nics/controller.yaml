@@ -1,0 +1,278 @@
+heat_template_version: queens
+description: >
+  Software Config to drive os-net-config to configure VLANs for the Controller role.
+parameters:
+  ControlPlaneIp:
+    default: ''
+    description: IP address/subnet on the ctlplane network
+    type: string
+  StorageIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage0 network
+    type: string
+  Storage1IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage1 network
+    type: string
+  Storage2IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage2 network
+    type: string
+  StorageMgmtIpSubnet:
+    default: ''
+    description: IP address/subnet on the storage_mgmt0 network
+    type: string
+  StorageMgmt1IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage_mgmt1 network
+    type: string
+  StorageMgmt2IpSubnet:
+    default: ''
+    description: IP address/subnet on the storage_mgmt2 network
+    type: string
+  InternalApiIpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api0 network
+    type: string
+  InternalApi1IpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api1 network
+    type: string
+  InternalApi2IpSubnet:
+    default: ''
+    description: IP address/subnet on the internal_api2 network
+    type: string
+  TenantIpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant0 network
+    type: string
+  Tenant1IpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant1 network
+    type: string
+  Tenant2IpSubnet:
+    default: ''
+    description: IP address/subnet on the tenant2 network
+    type: string
+  ExternalIpSubnet:
+    default: ''
+    description: IP address/subnet on the external network
+    type: string
+  StorageNetworkVlanID:
+    default: 1195
+    description: Vlan ID for the storage0 network traffic.
+    type: number
+  Storage1NetworkVlanID:
+    default: 2603
+    description: Vlan ID for the storage1 network traffic.
+    type: number
+  Storage2NetworkVlanID:
+    default: 2613
+    description: Vlan ID for the storage2 network traffic.
+    type: number
+  StorageMgmtNetworkVlanID:
+    default: 1196
+    description: Vlan ID for the storage_mgmt0 network traffic.
+    type: number
+  StorageMgmt1NetworkVlanID:
+    default: 2604
+    description: Vlan ID for the storage_mgmt1 network traffic.
+    type: number
+  StorageMgmt2NetworkVlanID:
+    default: 2614
+    description: Vlan ID for the storage_mgmt2 network traffic.
+    type: number
+  InternalApiNetworkVlanID:
+    default: 1194
+    description: Vlan ID for the internal_api0 network traffic.
+    type: number
+  InternalApi1NetworkVlanID:
+    default: 2602
+    description: Vlan ID for the internal_api1 network traffic.
+    type: number
+  InternalApi2NetworkVlanID:
+    default: 2612
+    description: Vlan ID for the internal_api2 network traffic.
+    type: number
+  TenantNetworkVlanID:
+    default: 1222
+    description: Vlan ID for the tenant0 network traffic.
+    type: number
+  Tenant1NetworkVlanID:
+    default: 1223
+    description: Vlan ID for the tenant1 network traffic.
+    type: number
+  Tenant2NetworkVlanID:
+    default: 1224
+    description: Vlan ID for the tenant2 network traffic.
+    type: number
+  ExternalNetworkVlanID:
+    default: 310
+    description: Vlan ID for the external network traffic.
+    type: number
+  ControlPlane0SubnetCidr: # Override this via parameter_defaults
+    default: '24'
+    description: The subnet CIDR of the control plane network.
+    type: string
+  ControlPlane0DefaultRoute: # Override this via parameter_defaults
+    description: The default route of the control plane network.
+    type: string
+  ExternalInterfaceDefaultRoute:
+    default: '10.1.198.174'
+    description: default route for the external network
+    type: string
+  DnsServers: # Override this via parameter_defaults
+    default: []
+    description: A list of DNS servers (2 max for some implementations) that will be added to resolv.conf.
+    type: comma_delimited_list
+  Leaf0EC2MetadataIp: # Override this via parameter_defaults
+    description: The IP address of the EC2 metadata server.
+    type: string
+  DnsSearchDomains: # Override this via parameter_defaults
+    default: []
+    description: A list of DNS search domains to be added (in order) to resolv.conf.
+    type: comma_delimited_list
+  InternalApiSupernet:
+    type: string
+  TenantSupernet:
+    type: string
+  StorageSupernet:
+    type: string
+  StorageMgmtSupernet:
+    type: string
+
+  # Default Routes
+  ControlPlane0DefaultRoute:
+    type: string
+  ControlPlane1DefaultRoute:
+    type: string
+  ControlPlane2DefaultRoute:
+    type: string
+  StorageInterfaceDefaultRoute:
+    type: string
+  Storage1InterfaceDefaultRoute:
+    type: string
+  Storage2InterfaceDefaultRoute:
+    type: string
+  StorageMgmtInterfaceDefaultRoute:
+    type: string
+  StorageMgmt1InterfaceDefaultRoute:
+    type: string
+  StorageMgmt2InterfaceDefaultRoute:
+    type: string
+  InternalApiInterfaceDefaultRoute:
+    type: string
+  InternalApi1InterfaceDefaultRoute:
+    type: string
+  InternalApi2InterfaceDefaultRoute:
+    type: string
+  TenantInterfaceDefaultRoute:
+    type: string
+  Tenant1InterfaceDefaultRoute:
+    type: string
+  Tenant2InterfaceDefaultRoute:
+    type: string
+
+resources:
+  OsNetConfigImpl:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config:
+        str_replace:
+          template:
+            get_file: /usr/share/openstack-tripleo-heat-templates/network/scripts/run-os-net-config.sh
+          params:
+            $network_config:
+              network_config:
+              - type: interface
+                name: p3p2
+                use_dhcp: false
+              - type: vlan
+                device: p3p2
+                dns_servers:
+                  get_param: DnsServers
+                use_dhcp: false
+                vlan_id:
+                  get_param: ExternalNetworkVlanID
+                addresses:
+                - ip_netmask:
+                    get_param: ExternalIpSubnet
+                routes:
+                - default: true
+                  next_hop:
+                    get_param: ExternalInterfaceDefaultRoute
+              - type: ovs_bridge
+                name: bridge_name
+                use_dhcp: false
+                dns_servers:
+                  get_param: DnsServers
+                domain:
+                  get_param: DnsSearchDomains
+                addresses:
+                - ip_netmask:
+                    list_join:
+                    - /
+                    - - get_param: ControlPlaneIp
+                      - get_param: ControlPlane0SubnetCidr
+                routes:
+                - ip_netmask: 169.254.169.254/32
+                  next_hop:
+                    get_param: Leaf0EC2MetadataIp
+                - ip_netmask: 172.16.120.0/22
+                  next_hop:
+                    get_param: ControlPlane0DefaultRoute
+                members:
+                - type: interface
+                  name: p3p1
+                  # force the MAC address of the bridge to this interface
+                  primary: true
+                - type: vlan
+                  vlan_id:
+                    get_param: StorageNetworkVlanID
+                  addresses:
+                  - ip_netmask:
+                      get_param: StorageIpSubnet
+                  routes:
+                  - ip_netmask:
+                      get_param: StorageSupernet
+                    next_hop:
+                      get_param: StorageInterfaceDefaultRoute
+                - type: vlan
+                  vlan_id:
+                    get_param: StorageMgmtNetworkVlanID
+                  addresses:
+                  - ip_netmask:
+                      get_param: StorageMgmtIpSubnet
+                  routes:
+                  - ip_netmask:
+                      get_param: StorageMgmtSupernet
+                    next_hop:
+                      get_param: StorageMgmtInterfaceDefaultRoute
+                - type: vlan
+                  vlan_id:
+                    get_param: InternalApiNetworkVlanID
+                  addresses:
+                  - ip_netmask:
+                      get_param: InternalApiIpSubnet
+                  routes:
+                  - ip_netmask:
+                      get_param: InternalApiSupernet
+                    next_hop:
+                      get_param: InternalApiInterfaceDefaultRoute
+                - type: vlan
+                  vlan_id:
+                    get_param: TenantNetworkVlanID
+                  addresses:
+                  - ip_netmask:
+                      get_param: TenantIpSubnet
+                  routes:
+                  - ip_netmask:
+                      get_param: TenantSupernet
+                    next_hop:
+                      get_param: TenantInterfaceDefaultRoute
+outputs:
+  OS::stack_id:
+    description: The OsNetConfigImpl resource.
+    value:
+      get_resource: OsNetConfigImpl
