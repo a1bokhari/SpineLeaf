@@ -3,8 +3,8 @@ resource_registry:
   OS::TripleO::Compute1::Net::SoftwareConfig: ./spine-leaf-nics/compute1.yaml
   OS::TripleO::Compute2::Net::SoftwareConfig: ./spine-leaf-nics/compute2.yaml
   OS::TripleO::CephStorage0::Net::SoftwareConfig: ./spine-leaf-nics/ceph-storage.yaml
-  OS::TripleO::Compute1::NodeUserData: ./disable_nic.yaml
-  OS::TripleO::Compute2::NodeUserData: ./disable_nic.yaml
+  #OS::TripleO::Compute1::NodeUserData: ./disable_nic.yaml
+  #OS::TripleO::Compute2::NodeUserData: ./disable_nic.yaml
 
 parameter_defaults:
   StorageSupernet: 172.16.128.0/22
