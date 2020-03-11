@@ -11,7 +11,7 @@
     - Storage2
   HostnameFormatDefault: '%stackname%-compute2-%index%'
   RoleParametersDefault:
-    TunedProfileName: "virtual-host"
+    TunedProfileName: "cpu-partitioning"
   # Deprecated & backward-compatible values (FIXME: Make parameters consistent)
   # Set uses_deprecated_params to True if any deprecated params are used.
   uses_deprecated_params: True
@@ -27,6 +27,7 @@
   ServicesDefault:
     - OS::TripleO::Services::Aide
     - OS::TripleO::Services::AuditD
+    - OS::TripleO::Services::BootParams
     - OS::TripleO::Services::CACerts
     - OS::TripleO::Services::CephClient
     - OS::TripleO::Services::CephExternal
@@ -47,7 +48,8 @@
     - OS::TripleO::Services::MetricsQdr
     - OS::TripleO::Services::MySQLClient
     - OS::TripleO::Services::NeutronBgpVpnBagpipe
-    - OS::TripleO::Services::NeutronLinuxbridgeAgent
+    - OS::TripleO::Services::NeutronSriovAgent
+    - OS::TripleO::Services::NeutronSriovHostConfig
     - OS::TripleO::Services::NeutronVppAgent
     - OS::TripleO::Services::NovaCompute
     - OS::TripleO::Services::NovaLibvirt
@@ -66,7 +68,6 @@
     - OS::TripleO::Services::Timezone
     - OS::TripleO::Services::TripleoFirewall
     - OS::TripleO::Services::TripleoPackages
-    - OS::TripleO::Services::Tuned
     - OS::TripleO::Services::Vpp
     - OS::TripleO::Services::OVNController
     - OS::TripleO::Services::OVNMetadataAgent

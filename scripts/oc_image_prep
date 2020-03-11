@@ -6,5 +6,14 @@ openstack overcloud container image prepare \
   --set ceph_namespace=registry.access.redhat.com/rhceph \
   --set ceph_image=rhceph-3-rhel7 \
   --tag-from-label {version}-{release} \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/services-docker/neutron-sriov.yaml \
+  --roles-file /home/stack/templates/roles_data_spine_leaf.yaml \
   --output-env-file=/home/stack/templates/overcloud_images.yaml \
   --output-images-file /home/stack/local_registry_images.yaml
+
+
+sleep 5
+
+sudo openstack overcloud container image upload \
+  --config-file  /home/stack/local_registry_images.yaml \
+  --verbose

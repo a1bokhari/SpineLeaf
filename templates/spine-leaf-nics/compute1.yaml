@@ -185,9 +185,6 @@ resources:
           params:
             $network_config:
               network_config:
-              - type: interface
-                name: p3p2
-                use_dhcp: false
               - type: ovs_bridge
                 name: bridge_name
                 use_dhcp: false
@@ -246,6 +243,20 @@ resources:
                       get_param: TenantSupernet
                     next_hop:
                       get_param: Tenant1InterfaceDefaultRoute
+              - type: interface
+                name: p3p1
+                mtu: 9000
+                use_dhcp: false
+                defroute: false
+                nm_controlled: true
+                hotplug: true
+              - type: interface
+                name: p3p2
+                mtu: 9000
+                use_dhcp: false
+                defroute: false
+                nm_controlled: true
+                hotplug: true
 outputs:
   OS::stack_id:
     description: The OsNetConfigImpl resource.

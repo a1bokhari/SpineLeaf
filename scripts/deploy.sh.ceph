@@ -8,5 +8,7 @@ time openstack overcloud deploy --templates \
   -e /home/stack/templates/network-environment.yaml \
   -e /home/stack/templates/node-data.yaml\
   -e /home/stack/templates/overcloud_images.yaml \
+  -e /usr/share/openstack-tripleo-heat-templates/environments/ceph-ansible/ceph-ansible.yaml \
+  -e /home/stack/templates/ceph-custom-config.yaml  \
   --ntp-server 172.16.121.254 \
   -t 240
